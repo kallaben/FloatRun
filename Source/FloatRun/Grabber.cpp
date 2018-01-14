@@ -30,13 +30,49 @@ void UGrabber::BeginPlay()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
+	//Raytrace
+	DrawDebugLine(
+		GetWorld(),
+		GetReachLineStart(),
+		GetReachLineEnd(),
+		FColor(255, 0, 0),
+		false,
+		0.f,
+		0.f,
+		10.f
+	);
+
 
 	if (!PhysicsHandle || IsJumping)
+	{
+		Release();
 		return;
+	}
 
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->SetTargetLocation(GetReachLineEnd());
+	}
+}
+
+void UGrabber::Throw()
+{
+	if (!PhysicsHandle)
+		return;
+
+	APlayerCameraManager *camManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+
+	FVector camLocation = camManager->GetCameraLocation();
+	FVector camForward = camManager->GetCameraRotation().Vector();
+
+	auto HitResult = GetFirstPhysicsBodyInReach();
+	auto ComponentToGrab = HitResult.GetComponent();
+	auto ActorHit = HitResult.GetActor();
+	//Throwing function
+	if (ActorHit) {
+		Release();
+		ComponentToGrab->AddImpulse((camForward * ThrowPower), NAME_None, true);	
 	}
 }
 
@@ -58,9 +94,6 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 
 
 void UGrabber::Grab() {
-	FString IsJumpingString;
-	IsJumping ? IsJumpingString = "True"  : IsJumpingString = "False";
-	UE_LOG(LogTemp, Error, TEXT("IsJumping: %s."), *IsJumpingString);
 	if (!PhysicsHandle)
 		return;
 
@@ -95,6 +128,7 @@ void UGrabber::SetupInputComponent()
 	{
 		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
 		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
+		InputComponent->BindAction("Throw", IE_Pressed, this, &UGrabber::Throw);
 	}
 	else
 		UE_LOG(LogTemp, Error, TEXT("No InputComponent found for %s."), *GetOwner()->GetName());

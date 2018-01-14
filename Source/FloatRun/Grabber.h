@@ -25,10 +25,15 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void Throw();
+
 private:
 	float Reach = 200.f;
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
 	UInputComponent* InputComponent = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	int ThrowPower = 3000;
 
 	void Grab();
 	void Release();
