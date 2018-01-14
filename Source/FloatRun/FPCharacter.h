@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Grabber.h"
 #include "GameFramework/Character.h"
 #include "FPCharacter.generated.h"
 
@@ -13,6 +14,9 @@ class FLOATRUN_API AFPCharacter : public ACharacter
 
 private:
 	bool IsSprinting = false;
+	UGrabber* Grabber = nullptr;
+	void GetGrabber();
+
 public:
 	// Sets default values for this character's properties
 	AFPCharacter();
@@ -33,13 +37,15 @@ public:
 	void ToggleSprintFalse();
 
 	UFUNCTION()
-		void MoveForward(float Value);
+	void MoveForward(float Value);
 	UFUNCTION()
-		void MoveLeft(float Value);
+	void MoveLeft(float Value);
 
 	UFUNCTION()
-		void StartJump();
+	void StartJump();
 	UFUNCTION()
-		void StopJump();
+	void StopJump();
+
+	//If there is a grabber component, no jumping while grabbing.
 
 };

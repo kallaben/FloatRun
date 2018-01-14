@@ -15,8 +15,21 @@ AFPCharacter::AFPCharacter()
 void AFPCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
 	UE_LOG(LogTemp, Warning, TEXT("FPCharacter is in play."));
+	GetGrabber();
+}
+
+void AFPCharacter::GetGrabber()
+{
+	Grabber = this->FindComponentByClass<UGrabber>();
+	if (Grabber == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No grabber component found."));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Grabber component found."));
+	}
 }
 
 // Called every frame
@@ -24,6 +37,7 @@ void AFPCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	Grabber->IsJumping = bWasJumping;
 }
 
 // Called to bind functionality to input
@@ -62,7 +76,7 @@ void AFPCharacter::MoveForward(float Value)
 	// Get vector that defines players rotation on the x-axis
 	FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::X);
 
-	IsSprinting ? AddMovementInput(Direction, Value) : AddMovementInput(Direction, Value * 0.5);
+	IsSprinting ? AddMovementInput(Direction, Value) : AddMovementInput(Direction, Value);
 }
 
 void AFPCharacter::MoveLeft(float Value)
@@ -70,7 +84,7 @@ void AFPCharacter::MoveLeft(float Value)
 	// Get vector that defines players rotation on the x-axis
 	FVector Direction = FRotationMatrix(Controller->GetControlRotation()).GetScaledAxis(EAxis::Y);
 
-	IsSprinting ? AddMovementInput(Direction, Value) : AddMovementInput(Direction, Value * 0.5);
+	IsSprinting ? AddMovementInput(Direction, Value) : AddMovementInput(Direction, Value);
 }
 
 void AFPCharacter::StartJump()

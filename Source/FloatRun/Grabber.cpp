@@ -31,7 +31,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!PhysicsHandle)
+	if (!PhysicsHandle || IsJumping)
 		return;
 
 	if (PhysicsHandle->GrabbedComponent)
@@ -58,6 +58,9 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 
 
 void UGrabber::Grab() {
+	FString IsJumpingString;
+	IsJumping ? IsJumpingString = "True"  : IsJumpingString = "False";
+	UE_LOG(LogTemp, Error, TEXT("IsJumping: %s."), *IsJumpingString);
 	if (!PhysicsHandle)
 		return;
 

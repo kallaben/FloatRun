@@ -7,6 +7,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Grabber.generated.h"
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class FLOATRUN_API UGrabber : public UActorComponent
 {
@@ -15,7 +16,7 @@ class FLOATRUN_API UGrabber : public UActorComponent
 public:
 	// Sets default values for this component's properties
 	UGrabber();
-
+	bool IsJumping = false;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -25,7 +26,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	float Reach = 100.f;
+	float Reach = 200.f;
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
 	UInputComponent* InputComponent = nullptr;
 
