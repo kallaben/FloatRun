@@ -30,18 +30,6 @@ void UGrabber::BeginPlay()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
-	//Raytrace
-	DrawDebugLine(
-		GetWorld(),
-		GetReachLineStart(),
-		GetReachLineEnd(),
-		FColor(255, 0, 0),
-		false,
-		0.f,
-		0.f,
-		10.f
-	);
 
 
 	if (!PhysicsHandle || IsJumping)
@@ -56,6 +44,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	}
 }
 
+
 void UGrabber::Throw()
 {
 	if (!PhysicsHandle)
@@ -66,8 +55,11 @@ void UGrabber::Throw()
 	FVector camLocation = camManager->GetCameraLocation();
 	FVector camForward = camManager->GetCameraRotation().Vector();
 
+	//Get first moveable object
 	auto HitResult = GetFirstPhysicsBodyInReach();
+	//Get the primitive component that is grabbable
 	auto ComponentToGrab = HitResult.GetComponent();
+
 	auto ActorHit = HitResult.GetActor();
 	//Throwing function
 	if (ActorHit) {
@@ -102,6 +94,8 @@ void UGrabber::Grab() {
 	auto ActorHit = HitResult.GetActor();
 	//Grabbing function
 	if (ActorHit) {
+		//If body is static before grab, but still has physics enabled.
+		ComponentToGrab->SetEnableGravity(true);
 		PhysicsHandle->GrabComponent(
 			ComponentToGrab,
 			NAME_None,
