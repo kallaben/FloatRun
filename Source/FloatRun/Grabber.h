@@ -1,5 +1,7 @@
 #pragma once
 #include "Components/PrimitiveComponent.h"
+#include "Public/TimerManager.h"
+#include "Gravity.h"
 #include "Components/InputComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
@@ -25,6 +27,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void AdvanceTimer();
+
 	void Throw();
 
 private:
@@ -35,7 +39,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	int ThrowPower = 3000;
 
-	void Grab();
+	void Grab(float);
 	void Release();
 	//Checks if Physics Handle is available.
 	void FindPhysicsHandleComponent();
@@ -46,4 +50,6 @@ private:
 	FVector GetReachLineStart();
 	const FHitResult GetFirstPhysicsBodyInReach();
 
+	FTimerHandle CountdownTimerHandle;
+	int32 CountdownTime;
 };

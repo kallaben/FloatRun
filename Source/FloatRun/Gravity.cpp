@@ -18,8 +18,6 @@ UGravity::UGravity()
 void UGravity::BeginPlay()
 {
 	Super::BeginPlay();
-
-	EnableGravity = true;
 	PrimComponent = GetOwner()->FindComponentByClass<UPrimitiveComponent>();
 
 	// ...

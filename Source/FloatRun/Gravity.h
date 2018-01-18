@@ -18,6 +18,7 @@ class FLOATRUN_API UGravity : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UGravity();
+	bool EnableGravity = false;
 
 protected:
 	// Called when the game starts
@@ -28,7 +29,6 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	bool EnableGravity = false;
 	UPrimitiveComponent* PrimComponent = nullptr;
 
 	UPROPERTY(EditAnywhere)

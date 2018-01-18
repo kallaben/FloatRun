@@ -24,6 +24,7 @@ void UGrabber::BeginPlay()
 	FindPhysicsHandleComponent();
 	SetupInputComponent();
 
+
 }
 
 // Called every frame
@@ -42,13 +43,29 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	{
 		PhysicsHandle->SetTargetLocation(GetReachLineEnd());
 	}
+
+
 }
 
+void UGrabber::AdvanceTimer()
+{
+	if (CountdownTime == 0)
+	{
+		GetOwner()->GetWorldTimerManager().ClearTimer(CountdownTimerHandle);
+	}
+	else
+	{
+		--CountdownTime;
+	}
+}
 
 void UGrabber::Throw()
 {
 	if (!PhysicsHandle)
 		return;
+
+	CountdownTime = 1;
+	GetOwner()->GetWorldTimerManager().SetTimer(CountdownTimerHandle, this, &UGrabber::AdvanceTimer, 1.0f, true);
 
 	APlayerCameraManager *camManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
 
@@ -85,22 +102,40 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 }
 
 
-void UGrabber::Grab() {
+void UGrabber::Grab(float value) {
 	if (!PhysicsHandle)
 		return;
 
-	auto HitResult = GetFirstPhysicsBodyInReach();
-	auto ComponentToGrab = HitResult.GetComponent();
-	auto ActorHit = HitResult.GetActor();
-	//Grabbing function
-	if (ActorHit) {
-		//If body is static before grab, but still has physics enabled.
-		//ComponentToGrab->SetEnableGravity(true);
-		PhysicsHandle->GrabComponent(
-			ComponentToGrab,
-			NAME_None,
-			ComponentToGrab->GetOwner()->GetActorLocation(),
-			true);
+
+	if (value == 0)
+	{
+		Release();
+	}
+	else if (PhysicsHandle->GrabbedComponent)
+	{
+		return;
+	}
+	else if (CountdownTime <= 0)
+	{
+		auto HitResult = GetFirstPhysicsBodyInReach();
+		auto ComponentToGrab = HitResult.GetComponent();
+		auto ActorHit = HitResult.GetActor();
+
+		//Grabbing function
+		if (ActorHit) {
+			//If body is static before grab, but still has physics enabled.
+			ComponentToGrab->GetOwner()->FindComponentByClass<UGravity>()->EnableGravity = true;
+			PhysicsHandle->GrabComponent(
+				ComponentToGrab,
+				NAME_None,
+				ComponentToGrab->GetOwner()->GetActorLocation(),
+				true);
+		}
+		return;
+	}
+	else
+	{
+		return;
 	}
 }
 
@@ -120,8 +155,7 @@ void UGrabber::SetupInputComponent()
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 	if (InputComponent)
 	{
-		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
-		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
+		InputComponent->BindAxis("Grab", this, &UGrabber::Grab);
 		InputComponent->BindAction("Throw", IE_Pressed, this, &UGrabber::Throw);
 	}
 	else
