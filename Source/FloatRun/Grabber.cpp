@@ -95,7 +95,7 @@ void UGrabber::Grab() {
 	//Grabbing function
 	if (ActorHit) {
 		//If body is static before grab, but still has physics enabled.
-		ComponentToGrab->SetEnableGravity(true);
+		//ComponentToGrab->SetEnableGravity(true);
 		PhysicsHandle->GrabComponent(
 			ComponentToGrab,
 			NAME_None,
